@@ -381,6 +381,38 @@ const getPreviousDnaList = (projId) => {
     }
 }
 
+const getPreviousMetaData = (projId) => {
+
+  let metaData = []
+
+  const prevProjectExists = fs.existsSync(path.join(projectsDir, projId, `_metadata.json`))
+
+  console.log(prevProjectExists)
+
+  if (prevProjectExists) {
+
+    const mData = JSON.parse(fs.readFileSync(path.join(projectsDir, projId, `_metadata.json`)))
+
+    if (mData) {
+
+      for (let v = 0; v < mData.length; v++) {
+
+        metaData.push(mData[v])
+        
+      }
+
+      return metaData;
+
+    } else {
+
+      return [];
+    }
+  } else {
+
+      return [];
+    }
+}
+
 const saveMetaDataSingleFile = (_editionCount) => {
 
   let metadata = metadataList.find((meta) => meta.edition == _editionCount);
@@ -435,8 +467,9 @@ const startCreating = async (startPoint, endPoint, projId) => {
   let abstractedIndexes = [];
 
   dnaList = getPreviousDnaList(projId)
+  metadataList = getPreviousMetaData(projId)
 
-  console.log(dnaList)
+  console.log(metadataList)
 
   //<starthhere></starthhere>
 
