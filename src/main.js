@@ -40,7 +40,7 @@ const HashlipsGiffer = require(`${basePath}/modules/HashlipsGiffer.js`);
 
 let hashlipsGiffer = null;
 
-const buildSetup = () => {
+const buildSetup = (projId) => {
 
   if (fs.existsSync(buildDir)) {
     fs.rmdirSync(buildDir, {
@@ -50,6 +50,12 @@ const buildSetup = () => {
 
   if (!fs.existsSync(projectsDir)) {
     fs.mkdirSync(projectsDir)
+  }
+
+  if(!fs.existsSync(path.join(projectsDir, projId))) {
+    fs.mkdirSync(`${projectsDir}/${projId}`);
+    fs.mkdirSync(`${projectsDir}/${projId}/json`);
+    fs.mkdirSync(`${projectsDir}/${projId}/images`);
   }
 
   fs.mkdirSync(buildDir);
@@ -134,6 +140,13 @@ const saveImage = (_editionCount) => {
   );
 };
 
+const saveImageToProjects = (_editionCount, projId) => {
+  fs.writeFileSync(
+    `${projectsDir}/${projId}/images/${_editionCount}.png`,
+    canvas.toBuffer("image/png")
+  );
+};
+
 const genColor = () => {
   let hue = Math.floor(Math.random() * 360);
   let pastel = `hsl(${hue}, 100%, ${background.brightness})`;
@@ -187,6 +200,7 @@ const addMetadata = (_dna, _edition) => {
   metadataList.push(tempMetadata);
   attributesList = [];
 };
+
 
 const addAttributes = (_element) => {
   let selectedElement = _element.layer.selectedElement;
@@ -327,21 +341,25 @@ const writeMetaData = (_data) => {
   fs.writeFileSync(`${buildDir}/json/_metadata.json`, _data);
 };
 
+const writeMetaDataToProjects = (_data, projId) => {
+  fs.writeFileSync(`${projectsDir}/${projId}/_metadata.json`, _data);
+};
+
 const writeDnaData = (_data, projId) => {
-  fs.writeFileSync(`${projectsDir}/_dna${projId}.json`, _data);
+  fs.writeFileSync(`${projectsDir}/${projId}/_dna${projId}.json`, _data);
 };
 
 const getPreviousDnaList = (projId) => {
 
   let _DnaList = new Set()
 
-  const prevProjectExists = fs.existsSync(path.join(projectsDir, `_dna${projId}.json`))
+  const prevProjectExists = fs.existsSync(path.join(projectsDir, projId, `_dna${projId}.json`))
 
   console.log(prevProjectExists)
 
   if (prevProjectExists) {
 
-    const dnaData = JSON.parse(fs.readFileSync(path.join(projectsDir, `_dna${projId}.json`)))
+    const dnaData = JSON.parse(fs.readFileSync(path.join(projectsDir, projId, `_dna${projId}.json`)))
 
     if (dnaData) {
 
@@ -375,6 +393,22 @@ const saveMetaDataSingleFile = (_editionCount) => {
     null;
   fs.writeFileSync(
     `${buildDir}/json/${_editionCount}.json`,
+    JSON.stringify(metadata, null, 2)
+  );
+};
+
+const saveMetaDataSingleFileToProjects = (_editionCount, projId) => {
+
+  let metadata = metadataList.find((meta) => meta.edition == _editionCount);
+
+  debugLogs
+    ?
+    console.log(
+      `Writing metadata for ${_editionCount}: ${JSON.stringify(metadata)}`
+    ) :
+    null;
+  fs.writeFileSync(
+    `${projectsDir}/${projId}/json/${_editionCount}.json`,
     JSON.stringify(metadata, null, 2)
   );
 };
@@ -491,8 +525,12 @@ const startCreating = async (startPoint, endPoint, projId) => {
             null;
 
           saveImage(abstractedIndexes[0]);
+          saveImageToProjects(abstractedIndexes[0], projId);
+
           addMetadata(newDna, abstractedIndexes[0]);
+
           saveMetaDataSingleFile(abstractedIndexes[0]);
+          saveMetaDataSingleFileToProjects(abstractedIndexes[0], projId);
 
           console.log(
             `Created edition: ${abstractedIndexes[0]}, with DNA: ${sha1(
@@ -522,6 +560,7 @@ const startCreating = async (startPoint, endPoint, projId) => {
     layerConfigIndex++;
   }
   writeMetaData(JSON.stringify(metadataList, null, 2));
+  writeMetaDataToProjects(JSON.stringify(metadataList, null, 2), projId);
   writeDnaData(JSON.stringify(Array.from(dnaList), null, 2), projId);
 
 };

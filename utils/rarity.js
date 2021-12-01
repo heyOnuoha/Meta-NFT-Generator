@@ -6,8 +6,17 @@ const { layerConfigurations } = require(`${basePath}/src/config.js`);
 
 const { getElements } = require("../src/main.js");
 
+const projectsDir = `${basePath}/projects`;
+
+if(!(process.argv[2])) {
+
+  throw new Error("Project Id is required")
+}
+
+const projId = process.argv[2];
+
 // read json data
-let rawdata = fs.readFileSync(`${basePath}/build/json/_metadata.json`);
+let rawdata = fs.readFileSync(`${projectsDir}/${projId}/_metadata.json`);
 let data = JSON.parse(rawdata);
 let editionSize = data.length;
 

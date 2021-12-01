@@ -1,0 +1,23 @@
+{
+  "name": "Your Collection #296",
+  "description": "Remember to replace this description",
+  "image": "ipfs://NewUriToReplace/296.png",
+  "edition": 296,
+  "attributes": [
+    [
+      {
+        "trait_type": "average color",
+        "value": "rgb(118,61,144)"
+      },
+      {
+        "trait_type": "What is this?",
+        "value": "NOT a Hot Dog"
+      },
+      {
+        "trait_type": "date",
+        "value": 1601
+      }
+    ]
+  ],
+  "compiler": "HashLips Art Engine"
+}

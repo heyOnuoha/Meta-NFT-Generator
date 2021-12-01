@@ -2,8 +2,19 @@ const fs = require("fs");
 const path = require("path");
 const { createCanvas, loadImage } = require("canvas");
 const basePath = process.cwd();
-const buildDir = `${basePath}/build/json`;
-const inputDir = `${basePath}/build/images`;
+
+const projectsDir = `${basePath}/projects`;
+
+if(!(process.argv[2])) {
+
+  throw new Error("Project Id is required")
+}
+
+const projId = process.argv[2];
+
+// read json data
+const buildDir = `${projectsDir}/${projId}/json`;
+const inputDir = `${projectsDir}/${projId}/images`;
 const {
   format,
   namePrefix,

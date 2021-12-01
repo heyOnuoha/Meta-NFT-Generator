@@ -2,12 +2,25 @@ const fs = require("fs");
 const path = require("path");
 const { createCanvas, loadImage } = require("canvas");
 const basePath = process.cwd();
-const buildDir = `${basePath}/build/pixel_images`;
-const inputDir = `${basePath}/build/images`;
+
 const { format, pixelFormat } = require(`${basePath}/src/config.js`);
 const console = require("console");
 const canvas = createCanvas(format.width, format.height);
 const ctx = canvas.getContext("2d");
+
+const projectsDir = `${basePath}/projects`;
+
+if(!(process.argv[2])) {
+
+  throw new Error("Project Id is required")
+}
+
+const projId = process.argv[2];
+
+// read json data
+
+const buildDir = `${projectsDir}/${projId}/pixel_images`;
+const inputDir = `${projectsDir}/${projId}/images`;
 
 const buildSetup = () => {
   if (fs.existsSync(buildDir)) {

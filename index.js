@@ -16,6 +16,6 @@ const endPoint = process.argv[3];
 const projId = process.argv[4];
 
 (() => {
-  buildSetup();
+  buildSetup(projId);
   startCreating(Number.parseInt(startPoint), Number.parseInt(endPoint), projId);
 })();
